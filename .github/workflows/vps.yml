@@ -6,30 +6,27 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 350
     steps:
-      - name: Khoi chay VS Code Web
+      - name: Cai dat Code-Server (Khong dung Docker)
         run: |
-          docker run -d --name=code-server \
-            -e PUID=1000 -e PGID=1000 -e TZ=Etc/UTC \
-            -e PASSWORD=123456 \
-            -p 8443:8443 --shm-size="1gb" \
-            lscr.io/linuxserver/code-server:latest
-
-      - name: Fix loi Webview tren Mobile
+          curl -fsSL https://code-server.dev/install.sh | sh
+          
+      - name: Cau hinh Webview & Tat Trust
         run: |
-          sleep 10
-          docker exec -u root code-server mkdir -p /config/data/User
-          echo '{"workbench.webview.externalBrowser": "default", "security.workspace.trust.enabled": false}' > /tmp/settings.json
-          docker cp /tmp/settings.json code-server:/config/data/User/settings.json
-          docker exec -u root code-server chown -R abc:abc /config/data/User
-          docker restart code-server
-          sleep 5
-
+          mkdir -p ~/.local/share/code-server/User
+          echo '{"workbench.webview.externalBrowser": "default", "security.workspace.trust.enabled": false}' > ~/.local/share/code-server/User/settings.json
+          echo 'auth: none' > ~/.config/code-server/config.yaml
+          
+      - name: Chay Code-Server
+        run: |
+          code-server --bind-addr 0.0.0.0:8443 &
+          
       - name: Cai dat Cloudflared
         run: |
           curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
           sudo dpkg -i cloudflared.deb
-
+          
       - name: Lay Link Truy Cap
         run: |
-          echo "Mat khau: 123456"
+          echo "Khong can mat khau!"
+          sleep 5
           cloudflared tunnel --url http://localhost:8443
