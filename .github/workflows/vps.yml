@@ -13,12 +13,14 @@ jobs:
       - name: Cau hinh Webview & Tat Trust
         run: |
           mkdir -p ~/.local/share/code-server/User
+          mkdir -p ~/.config/code-server
           echo '{"workbench.webview.externalBrowser": "default", "security.workspace.trust.enabled": false}' > ~/.local/share/code-server/User/settings.json
           echo 'auth: none' > ~/.config/code-server/config.yaml
           
       - name: Chay Code-Server
         run: |
-          code-server --bind-addr 0.0.0.0:8443 &
+          code-server --bind-addr 0.0.0.0:8443 --disable-telemetry &
+          sleep 5
           
       - name: Cai dat Cloudflared
         run: |
@@ -28,5 +30,4 @@ jobs:
       - name: Lay Link Truy Cap
         run: |
           echo "Khong can mat khau!"
-          sleep 5
           cloudflared tunnel --url http://localhost:8443
