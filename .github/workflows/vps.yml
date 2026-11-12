@@ -1,28 +1,26 @@
-name: Free VPS
+name: Code Web AI
 on:
   workflow_dispatch:
 jobs:
-  vps-session:
+  code-server:
     runs-on: ubuntu-latest
     timeout-minutes: 350
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-      - name: Install prerequisites
+      - name: Khoi chay VS Code Web
         run: |
-          sudo apt update
-          sudo apt install -y tmate curl unzip sudo net-tools
-      - name: Install Tailscale
+          docker run -d --name=code-server \
+            -e PUID=1000 -e PGID=1000 -e TZ=Etc/UTC \
+            -e PASSWORD=123456 \
+            -p 8443:8443 --shm-size="1gb" \
+            lscr.io/linuxserver/code-server:latest
+
+      - name: Cai dat Cloudflared
         run: |
-          curl -fsSL https://tailscale.com/install.sh | sh
-      - name: Start Tailscale
+          curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+          sudo dpkg -i cloudflared.deb
+
+      - name: Lay Link Truy Cap
         run: |
-          sudo tailscaled &
-          sleep 8
-          sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTHKEY }} --hostname=my-free-vps
-      - name: Start tmate session
-        uses: mxschmitt/action-tmate@v3
-      - name: Show connection info
-        run: |
-          echo "Tailscale IP:"
-          tailscale ip -4
+          echo "Mat khau truy cap VS Code la: 123456"
+          echo "Vui long doi 5-10 giay de lay link..."
+          cloudflared tunnel --url http://localhost:8443
