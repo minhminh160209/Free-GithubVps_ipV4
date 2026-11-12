@@ -17,8 +17,13 @@ jobs:
       - name: Fix loi Webview tren Mobile
         run: |
           sleep 10
+          # Tạo thư mục cấu hình nếu chưa có
+          docker exec -u root code-server mkdir -p /config/data/User
+          # Ghi file cấu hình ép mở tab mới và tắt Trust
           echo '{"workbench.webview.externalBrowser": "default", "security.workspace.trust.enabled": false}' > /tmp/settings.json
           docker cp /tmp/settings.json code-server:/config/data/User/settings.json
+          # Cấp lại quyền để VS Code không bị lỗi
+          docker exec -u root chown -R abc:abc /config/data/User
           docker restart code-server
           sleep 5
 
