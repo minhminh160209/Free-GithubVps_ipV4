@@ -14,15 +14,6 @@ jobs:
             -p 8443:8443 --shm-size="1gb" \
             lscr.io/linuxserver/code-server:latest
 
-      - name: Cai dat Tieng Viet
-        run: |
-          # Đợi 20 giây để container khởi động hoàn toàn
-          sleep 20
-          docker exec code-server /app/code-server/bin/code-server --install-extension MS-CEINTL.vscode-language-pack-vi
-          echo '{"locale":"vi"}' > /tmp/settings.json
-          docker cp /tmp/settings.json code-server:/config/data/User/settings.json
-          docker restart code-server
-
       - name: Cai dat Cloudflared
         run: |
           curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
@@ -31,4 +22,5 @@ jobs:
       - name: Lay Link Truy Cap
         run: |
           echo "Mat khau truy cap VS Code la: 123456"
+          echo "Vui long doi 10 giay de lay link..."
           cloudflared tunnel --url http://localhost:8443
