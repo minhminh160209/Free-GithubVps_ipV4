@@ -16,14 +16,11 @@ jobs:
 
       - name: Cai dat Tieng Viet
         run: |
-          # Đợi 10 giây để code-server khởi động
-          sleep 10
-          # Cài gói ngôn ngữ tiếng Việt
+          # Đợi 20 giây để container khởi động hoàn toàn
+          sleep 20
           docker exec code-server /app/code-server/bin/code-server --install-extension MS-CEINTL.vscode-language-pack-vi
-          # Tạo file cấu hình mặc định ngôn ngữ là tiếng Việt
           echo '{"locale":"vi"}' > /tmp/settings.json
           docker cp /tmp/settings.json code-server:/config/data/User/settings.json
-          # Khởi động lại để áp dụng
           docker restart code-server
 
       - name: Cai dat Cloudflared
@@ -34,5 +31,4 @@ jobs:
       - name: Lay Link Truy Cap
         run: |
           echo "Mat khau truy cap VS Code la: 123456"
-          echo "Vui long doi 5-10 giay de lay link..."
           cloudflared tunnel --url http://localhost:8443
