@@ -14,6 +14,18 @@ jobs:
             -p 8443:8443 --shm-size="1gb" \
             lscr.io/linuxserver/code-server:latest
 
+      - name: Cai dat Tieng Viet
+        run: |
+          # Đợi 10 giây để code-server khởi động
+          sleep 10
+          # Cài gói ngôn ngữ tiếng Việt
+          docker exec code-server /app/code-server/bin/code-server --install-extension MS-CEINTL.vscode-language-pack-vi
+          # Tạo file cấu hình mặc định ngôn ngữ là tiếng Việt
+          echo '{"locale":"vi"}' > /tmp/settings.json
+          docker cp /tmp/settings.json code-server:/config/data/User/settings.json
+          # Khởi động lại để áp dụng
+          docker restart code-server
+
       - name: Cai dat Cloudflared
         run: |
           curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
